@@ -1,7 +1,14 @@
-import './App.css';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import TimeBlockPage from './pages/TimeBlockPage';
 
 function App() {
-	return <></>;
+	return (
+		<BrowserRouter>
+			<Routes>
+				<Route path="/" element={<TimeBlockPage />} />
+			</Routes>
+		</BrowserRouter>
+	);
 }
 
 export default App;
