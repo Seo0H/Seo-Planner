@@ -1,8 +1,11 @@
-export interface BlockProps {
-	id: string;
+export interface BlockForms {
 	key: number;
 	active: boolean;
-	// className: 'plan' | 'do';
+	time: number;
+}
+export interface BlockProps {
+	id: string;
+	form: BlockForms;
 	onClick: (e: React.MouseEvent) => void;
 }
 
