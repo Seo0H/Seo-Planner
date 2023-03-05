@@ -32,6 +32,7 @@ const BasicBlocks = () => {
 	const [doActive, setDoActive] = useState(initialDoBlockTemplet);
 	const [textMemoInput, setTextMemoInput] = useState(initialTextMemoInput);
 
+	//Shift List 선택을 위한 마지막 선택 idx 저장 state
 	const [lastClickIdx, setLastClickIdx] = useState(-1);
 
 	//한시간 -> 2block
