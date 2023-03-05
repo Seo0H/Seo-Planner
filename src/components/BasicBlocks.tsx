@@ -1,23 +1,21 @@
 import React from 'react';
 import { useState, useEffect, useCallback } from 'react';
-import styled from 'styled-components';
 import Block from './Block';
 import { BlockTypes } from './types';
 import * as S from './styles';
 
-//한시간 -> 2block
-// 7:00 ~ 24:00 -> 17시간 -> 34 block 나와야 함.
-// 나중에 이것도 유저가 선택 할 수 있게 하면 좋을 것 같다.
 const initialPlanBlockTemplet = [
 	{
 		key: 0,
-		isActive: false,
+		time: 7,
+		active: false,
 	},
 ];
 const initialDoBlockTemplet = [
 	{
 		key: 0,
-		isActive: false,
+		time: 7,
+		active: false,
 	},
 ];
 
@@ -34,14 +32,22 @@ const BasicBlocks = () => {
 	const [doActive, setDoActive] = useState(initialDoBlockTemplet);
 	const [textMemoInput, setTextMemoInput] = useState(initialTextMemoInput);
 
+	const [lastClickIdx, setLastClickIdx] = useState(-1);
+
+	//한시간 -> 2block
+	// 7:00 ~ 24:00 -> 17시간 -> 34 block 나와야 함.
+	// 나중에 이것도 유저가 선택 할 수 있게 하면 좋을 것 같다.
+	const blockCount = 34;
+
 	// 처음 한번만 랜더링
 	useEffect(() => {
 		let pushVal = [];
 		let pushMemoVal = [];
-		for (let i = 1; i <= 20; i++) {
+		for (let i = 1; i < blockCount; i++) {
 			pushVal.push({
 				key: i,
-				isActive: false,
+				time: 7 + i / 2,
+				active: false,
 			});
 
 			pushMemoVal.push({
@@ -57,58 +63,79 @@ const BasicBlocks = () => {
 	const onClick = useCallback(
 		(e: React.MouseEvent) => {
 			e.preventDefault();
+			const element = e.target as HTMLInputElement; // element? inputelement? 머가 좋은거지
 
-			const element = e.target as Element;
 			const parentElement = element.parentElement;
-
 			const clickBoxID = parseInt(e.currentTarget.id);
+
 			if (parentElement?.className.includes(BlockTypes.PLAN)) {
-				const clickBoxIdx = planActive.findIndex(i => i.key === clickBoxID);
 				const copyArr = [...planActive];
-				copyArr[clickBoxIdx] = {
-					...copyArr[clickBoxIdx],
-					isActive: !copyArr[clickBoxIdx].isActive,
-				};
+
+				// isActive가 true로 바뀌는 경우 일때만 shift key가 작동해야 한다.
+				// 중간에 isActive가 true이면 그대로 true로 나둬야 한다.
+				// 나중에 코드를 좀 더 가독성있게 바꿀 수 있을 법 하다.
+				if (e.shiftKey) {
+					for (let i = lastClickIdx; i <= clickBoxID; i++) {
+						copyArr[i] = {
+							...copyArr[i],
+							active: true,
+						};
+					}
+				} else {
+					copyArr[clickBoxID] = {
+						...copyArr[clickBoxID],
+						active: !copyArr[clickBoxID].active,
+					};
+				}
 				setPlanActive(copyArr);
 			} else if (parentElement?.className.includes(BlockTypes.DONE)) {
-				const clickBoxIdx = doActive.findIndex(i => i.key === clickBoxID);
 				const copyArr = [...doActive];
-				copyArr[clickBoxIdx] = {
-					...copyArr[clickBoxIdx],
-					isActive: !copyArr[clickBoxIdx].isActive,
-				};
+
+				if (e.shiftKey) {
+					for (let i = lastClickIdx; i <= clickBoxID; i++) {
+						copyArr[i] = {
+							...copyArr[i],
+							active: true,
+						};
+					}
+				} else {
+					copyArr[clickBoxID] = {
+						...copyArr[clickBoxID],
+						active: !copyArr[clickBoxID].active,
+					};
+				}
 				setDoActive(copyArr);
 			}
+
+			//shift list select를 위해 마지막 클릭한 idx 저장
+			setLastClickIdx(clickBoxID);
 		},
-		[planActive, doActive],
+		[planActive, doActive, lastClickIdx],
 	);
+
+	const onChange = useCallback((e: React.ChangeEvent) => {}, []);
 
 	return (
 		<S.MainContainer>
 			<S.BlockContainer>
-				<S.ListWrapper className={BlockTypes.PLAN} style={{ gridArea: 'block,' }}>
+				<S.TimeContainor style={{ gridArea: 'time' }}>
+					{planActive.map(el => (Number.isInteger(el.time) ? <div>{el.time}</div> : <div></div>))}
+				</S.TimeContainor>
+				<div className={BlockTypes.PLAN}>
 					{planActive.map(el => (
-						<Block key={el.key} id={el.key.toString()} active={el.isActive} onClick={onClick} />
+						<Block form={el} key={el.key} id={el.key.toString()} onClick={onClick} />
 					))}
-				</S.ListWrapper>
-				<S.ListWrapper>
-					{textMemoInput.map(el => (
-						<S.TextMemoInput key={el.key} style={{ gridArea: 'line' }} autoComplete="off" />
-					))}
-				</S.ListWrapper>
-			</S.BlockContainer>
-
-			<S.BlockContainer>
-				<S.ListWrapper className={BlockTypes.DONE} style={{ gridArea: 'block' }}>
+				</div>
+				<div className={BlockTypes.DONE}>
 					{doActive.map(el => (
-						<Block key={el.key} id={el.key.toString()} active={el.isActive} onClick={onClick} />
+						<Block form={el} key={el.key} id={el.key.toString()} onClick={onClick} />
 					))}
-				</S.ListWrapper>
-				<S.ListWrapper>
+				</div>
+				<div>
 					{textMemoInput.map(el => (
-						<S.TextMemoInput key={el.key} style={{ gridArea: 'line' }} autoComplete="off" />
+						<S.TextMemoInput key={el.key} />
 					))}
-				</S.ListWrapper>
+				</div>
 			</S.BlockContainer>
 		</S.MainContainer>
 	);
