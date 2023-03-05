@@ -13,7 +13,7 @@ export const MainContainer = styled.div`
 
 export const BlockContainer = styled.div`
 	display: grid;
-	grid-template-areas: 'block line';
+	grid-template-areas: 'time block block line';
 `;
 
 export const StyledBasicBlockInput = styled.input<{ active: boolean }>`
@@ -41,5 +41,18 @@ export const TextMemoInput = styled.input`
 	border: 1px solid white;
 	border-bottom: 1px solid #d9d9d9;
 `;
-
-export const ListWrapper = styled.div``;
+export const TimeContainor = styled.div`
+	div {
+		display: block;
+		text-align: end;
+		height: 30px;
+		margin: 7px 1px 7px 10px;
+		padding-top: 0.1px;
+		border: 1px solid white;
+		font-size: 0.9rem;
+		font-weight: 600;
+		line-height: 1rem;
+		color: #a1a1a1;
+	}
+	display: inline-block;
+`;
