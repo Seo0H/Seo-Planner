@@ -1,8 +1,8 @@
 import React from 'react';
 import { useState, useEffect, useCallback } from 'react';
-import Block from './Block';
 import { BlockTypes } from './types';
 import * as S from './styles';
+import BlocksContainer from './BlocksContainer';
 
 const initialPlanBlockTemplet = [
 	{
@@ -39,6 +39,9 @@ const BasicBlocks = () => {
 	// 7:00 ~ 24:00 -> 17시간 -> 34 block 나와야 함.
 	// 나중에 이것도 유저가 선택 할 수 있게 하면 좋을 것 같다.
 	const blockCount = 34;
+
+	//줄바꿈 기준
+	const maxLine = 22;
 
 	// 처음 한번만 랜더링
 	useEffect(() => {
@@ -118,26 +121,18 @@ const BasicBlocks = () => {
 
 	return (
 		<S.MainContainer>
-			<S.BlockContainer>
-				<S.TimeContainor style={{ gridArea: 'time' }}>
-					{planActive.map(el => (Number.isInteger(el.time) ? <div>{el.time}</div> : <div></div>))}
-				</S.TimeContainor>
-				<div className={BlockTypes.PLAN}>
-					{planActive.map(el => (
-						<Block form={el} key={el.key} id={el.key.toString()} onClick={onClick} />
-					))}
-				</div>
-				<div className={BlockTypes.DONE}>
-					{doActive.map(el => (
-						<Block form={el} key={el.key} id={el.key.toString()} onClick={onClick} />
-					))}
-				</div>
-				<div>
-					{textMemoInput.map(el => (
-						<S.TextMemoInput key={el.key} />
-					))}
-				</div>
-			</S.BlockContainer>
+			<BlocksContainer
+				planActive={planActive.slice(0, maxLine)}
+				doActive={doActive.slice(0, maxLine)}
+				textMemoInput={textMemoInput.slice(0, maxLine)}
+				onClick={onClick}
+			/>
+			<BlocksContainer
+				planActive={planActive.slice(maxLine)}
+				doActive={doActive.slice(maxLine)}
+				textMemoInput={textMemoInput.slice(maxLine)}
+				onClick={onClick}
+			/>
 		</S.MainContainer>
 	);
 };
