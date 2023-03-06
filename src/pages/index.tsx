@@ -1,7 +1,8 @@
+import React from 'react';
 import BasicBlocks from '../components/main-field/BasicBlocks';
 import * as S from '../styles/GlobalStyel';
 
-const TimeBlockPage = () => {
+function main() {
 	return (
 		<>
 			<S.Navigator />
@@ -9,6 +10,6 @@ const TimeBlockPage = () => {
 			<BasicBlocks />
 		</>
 	);
-};
+}
 
-export default TimeBlockPage;
+export default main;
